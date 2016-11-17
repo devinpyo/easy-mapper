@@ -22,6 +22,7 @@ html, body { position:relative; width:100%; display:block; min-width:640px; }
 #gnb-menu-generate:hover { background:#999 !important; }
 
 /* 작업공간 */
+#gnb, #workspace { -webkit-user-select:none; -moz-user-select:none; user-select:none; }
 #workspace { position:absolute; top:36px; left:0; width:100%; cursor:crosshair; }
 #workspace-ruler { position:relative; }
 #workspace-ruler-x, #workspace-ruler-y { position:absolute; background:#fff; white-space:nowrap; overflow:hidden; }
@@ -50,6 +51,7 @@ html, body { position:relative; width:100%; display:block; min-width:640px; }
 #grid-coords { font-size:12px; color:#fff; background:rgba(0,0,0,0.5); filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#60000000,endColorstr=#60000000); padding:5px; white-space:nowrap; }
 .grid-box { position:absolute; z-index:50; background:rgba(0,0,0,0.5); filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#60000000,endColorstr=#60000000); background-image:url(about:blank); border:1px solid #fff; cursor:pointer; color:#fff; }
 #workspace-img-wrap._overmap .grid-1, #workspace-img-wrap._overmap .grid-2, #workspace-img-wrap._overmap #grid-coords { display:none; }
+.grid-box._moving { border:1px solid yellow; }
 .grid-box._active { border:1px solid red; }
 .grid-box._active._added { border:1px solid blue; }
 .grid-box-cnt, .grid-box-close { position:absolute; width:18px; line-height:18px; top:0; text-align:center; z-index:51; }

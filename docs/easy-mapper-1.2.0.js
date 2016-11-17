@@ -1,4 +1,4 @@
-/* Easy Mapper 1.1.0 by Inpyo Jeon (inpyoj@gmail.com) */
+/* Easy Mapper 1.2.0 by Inpyo Jeon (inpyoj@gmail.com) */
 
 // 전역 변수 선언
 var i, $img, imgWidth, imgHeight, measure, unit, posX, posY, filepath, $activeGridX, $activeGridY;
@@ -197,7 +197,7 @@ var pointEnd = new Array();
 var mapEl = new Array(); // 각 객체 좌표 저장 3차원 배열
 
 $(document).on('mousemove', '#workspace-img-wrap', drawGrid).on('mousedown mouseup', '#workspace-img-wrap', setGrid).on('mouseleave', '#workspace-img-wrap', resetGrid);
-$(document).on('mouseenter mouseleave', '.grid-box', overMapElView).on('click', '.grid-box', clickMapElView).on('click', '.grid-box-close', removeMapElView);
+$(document).on('mouseenter mouseleave', '.grid-box', overMapElView).on('mouseup', '.grid-box', clickMapElView).on('click', '.grid-box-close', removeMapElView);
 $(document).on('click', '.grid-box-link', addLinkToMapEl).on('click', '#pop-addlink .pop-btn-confirm', setLinkToMapEl);
 
 $(document).on('mousedown', '#workspace-ruler', function() { return false; })
@@ -244,6 +244,11 @@ function setGrid(e) {
 			} else return;
 		}
 		
+		var limX = (unit == 'px') ? Math.abs(pointStart[0] - pointEnd[0]) : Math.abs(pixelize(pointStart[0], 'x') - pixelize(pointEnd[0], 'x'));
+		var limY = (unit == 'px') ? Math.abs(pointStart[1] - pointEnd[1]) : Math.abs(pixelize(pointStart[1], 'y') - pixelize(pointEnd[1], 'y'));
+		
+		if (limX < 20 || limY < 20) return false; // 가로 또는 세로가 20px 미만일 때 맵 엘리먼트 생성 금지
+		
 		if (phase == 0) {
 			cnt++;
 			mapEl.push([pointStart.slice(0), pointEnd.slice(0)]); // 3차원 배열 저장 (Call by value)
@@ -253,6 +258,11 @@ function setGrid(e) {
 		
 		event.preventDefault();
 	} else return;
+}
+
+function pixelize(val, axis) {
+	var valOut = (axis == 'x') ? imgWidth * val / 100 : imgHeight * val / 100;
+	return valOut;
 }
 
 // 그리드 포인트 좌표 저장
@@ -297,13 +307,10 @@ function overMapElView(e) {
 }
 
 // 맵 엘리먼트 클릭
-function clickMapElView() {	
-	if ($(this).hasClass('_active'))
-		$('.grid-box').removeClass('_active');
-	else {
-		$('.grid-box').removeClass('_active');
-		$(this).addClass('_active');
-	}
+function clickMapElView() {
+	$('.grid-box').removeClass('_active');
+	$(this).removeClass('_moving');
+	$(this).addClass('_active');
 }
 
 // 맵 엘리먼트 삭제
@@ -341,7 +348,6 @@ function addLinkToMapEl() {
 		var targetIndex = $('.grid-box._active').attr('id').split('-')[2];
 		var urlink = mapEl[targetIndex][2];
 		var target = mapEl[targetIndex][3];
-		console.log(urlink)
 		$('#pop-addlink .pop-title').text('CHANGE URL LINK');
 		$('#pop-addlink .pop-btn-confirm').text('CHANGE LINK');
 		$('#pop-addlink-input').val(urlink);
@@ -393,14 +399,53 @@ $(document).on('click', '.pop-btn-copy', codeView).on('click', '.pop-btn-cancel.
 // 코드뷰 팝업 출력
 function codeView() {
 	popClose();
-	if ($(this).attr('id') == 'pop-btn-copy-a') {
-		popOpen($('#pop-codegen-a'));
-	} else {
-		popOpen($('#pop-codegen-im'));
-	}
+	if ($(this).attr('id') == 'pop-btn-copy-a') popOpen($('#pop-codegen-a'));
+	else popOpen($('#pop-codegen-im'));
 }
 
 // 뒤로가기 버튼
 function codeViewBack() {
 	popOpen($('#pop-code'));
+}
+
+/***********************************************************************************************
+ * 6) 맵 엘리먼트 제어 추가
+ ***********************************************************************************************/
+var beforePosX, beforePosY, beforeElPosX, beforeElPosY;
+
+$(document).on('mousedown', '.grid-box', boxMoveStart).on('mousemove mouseleave', '.grid-box._moving', boxMove); // 맵 엘리먼트 이동
+
+// 맵 엘리먼트 이동 시작
+function boxMoveStart(e) {
+	if ($(e.target)[0] != $(this).find('.grid-box-link')[0] && $(e.target)[0] != $(this).find('.grid-box-close')[0]) {
+		$('.grid-box').removeClass('_active');
+		$(this).addClass('_moving');
+		beforeElPosX = $(this).position().left;
+		beforeElPosY = $(this).position().top;
+		beforeClickPosX = e.pageX - $('#workspace-ruler-y').outerWidth() - $(this).position().left;
+		beforeClickPosY = e.pageY - $('#workspace-ruler-x').outerHeight() - $('#gnb').outerHeight() - $(this).position().top;
+	}	
+}
+
+// 맵 엘리먼트 이동
+function boxMove(e) {
+	if (e.type == 'mousemove') {
+		var mPosX = e.pageX - $('#workspace-ruler-y').outerWidth();
+		var mPosY = e.pageY - $('#workspace-ruler-x').outerHeight() - $('#gnb').outerHeight();
+		
+		if (mPosX - beforeClickPosX < 0)
+			$(this).css({ left: 0 });
+		else if (mPosX + $(this).outerWidth() - beforeClickPosX + 1 > imgWidth)
+			$(this).css({ left: imgWidth - $(this).outerWidth() - 1 });
+		else
+			$(this).css({ left: mPosX - beforeClickPosX });
+		
+		if (mPosY - beforeClickPosY < 0)
+			$(this).css({ top: 0 });
+		else if (mPosY + $(this).outerHeight() - beforeClickPosY + 1 > imgHeight)
+			$(this).css({ top: imgHeight - $(this).outerHeight() - 1 });
+		else
+			$(this).css({ top: mPosY - beforeClickPosY });
+	}
+	else $(this).removeClass('_moving');
 }
