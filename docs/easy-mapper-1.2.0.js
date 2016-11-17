@@ -60,9 +60,6 @@ $(document).on('click', '.pop-btn-cancel, #dim', popClose).on('keydown', keyEven
 
 // 메뉴 클릭 함수
 function menuItemClick() {
-	// 토글 메뉴 클래스 변경
-	if ($(this).parent().hasClass('_toggle'))
-		$(this).addClass('_active').siblings('li').removeClass('_active');
 	
 	switch ($(this).attr('id')) {
 		case 'gnb-menu-local':
@@ -75,12 +72,19 @@ function menuItemClick() {
 			
 		case 'gnb-menu-drag':
 		case 'gnb-menu-click':
+			$(this).addClass('_active').siblings('li').removeClass('_active');
 			setMeasure(); // 지정방식 함수 호출
 			break;
 			
 		case 'gnb-menu-percent':
 		case 'gnb-menu-pixel':
-			rulerInit(); // 눈금자 생성 함수 호출
+			if (!$(this).hasClass('_active')) {
+				if (confirm('Changing the unit will clear all the map elements. Do you want to continue?')) {
+					$(this).addClass('_active').siblings('li').removeClass('_active');
+					rulerInit(); // 눈금자 생성 함수 호출
+					resetMapElView(); // 맵 엘리먼트 삭제
+				}
+			}			
 			break;
 		
 		case 'gnb-menu-clear':
@@ -460,8 +464,9 @@ function boxMove(e) {
 function recalcElMap() {
 	var recalcIndex = $('.grid-box._active').attr('id').split('-')[2];
 	
-	mapEl[recalcIndex][0][0] = parseInt($('.grid-box._active').css('left'));
-	mapEl[recalcIndex][0][1] = parseInt($('.grid-box._active').css('top'));
-	mapEl[recalcIndex][1][0] = parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth();
-	mapEl[recalcIndex][1][1] = parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight();
+	mapEl[recalcIndex][0][0] = (unit == 'px') ? parseInt($('.grid-box._active').css('left')) : parseInt($('.grid-box._active').css('left')) / 10000 * imgWidth;
+	mapEl[recalcIndex][0][1] = (unit == 'px') ? parseInt($('.grid-box._active').css('top')) : parseInt($('.grid-box._active').css('top')) / 10000 * imgWidth;
+	mapEl[recalcIndex][1][0] = (unit == 'px') ? parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth() : (parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth()) / 10000 * imgWidth;
+	mapEl[recalcIndex][1][1] = (unit == 'px') ? parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight() : (parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight()) / 10000* imgWidth;
+	console.log(mapEl[recalcIndex][0][0])
 }
