@@ -308,9 +308,12 @@ function overMapElView(e) {
 
 // 맵 엘리먼트 클릭
 function clickMapElView() {
-	$('.grid-box').removeClass('_active');
-	$(this).removeClass('_moving');
-	$(this).addClass('_active');
+	if ($(this).hasClass('_moving')) {
+		$('.grid-box').removeClass('_active');
+		$(this).removeClass('_moving');
+		$(this).addClass('_active');
+		recalcElMap();
+	}
 }
 
 // 맵 엘리먼트 삭제
@@ -447,5 +450,18 @@ function boxMove(e) {
 		else
 			$(this).css({ top: mPosY - beforeClickPosY });
 	}
-	else $(this).removeClass('_moving');
+	else {
+		$(this).removeClass('_moving');
+		$(this).addClass('_active');
+		recalcElMap();
+	}
+}
+
+function recalcElMap() {
+	var recalcIndex = $('.grid-box._active').attr('id').split('-')[2];
+	
+	mapEl[recalcIndex][0][0] = parseInt($('.grid-box._active').css('left'));
+	mapEl[recalcIndex][0][1] = parseInt($('.grid-box._active').css('top'));
+	mapEl[recalcIndex][1][0] = parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth();
+	mapEl[recalcIndex][1][1] = parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight();
 }
