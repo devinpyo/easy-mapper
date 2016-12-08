@@ -424,7 +424,7 @@ $(document).on('mousedown', '.grid-box', boxMoveStart).on('mousemove mouseleave'
 
 // 맵 엘리먼트 이동 시작
 function boxMoveStart(e) {
-	if ($(e.target)[0] != $(this).find('.grid-box-link')[0] && $(e.target)[0] != $(this).find('.grid-box-close')[0]) {
+	if ($(e.target)[0] != $(this).find('.grid-box-link')[0] && $(e.target)[0] != $(this).find('.grid-box-close')[0] && $(e.target)[0] != $(this).find('.grid-box-resize')[0]) {
 		$('.grid-box').removeClass('_active');
 		$(this).addClass('_moving');
 		beforeElPosX = $(this).position().left;
@@ -468,5 +468,4 @@ function recalcElMap() {
 	mapEl[recalcIndex][0][1] = (unit == 'px') ? parseInt($('.grid-box._active').css('top')) : parseInt($('.grid-box._active').css('top')) / 10000 * imgWidth;
 	mapEl[recalcIndex][1][0] = (unit == 'px') ? parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth() : (parseInt($('.grid-box._active').css('left')) + $('.grid-box._active').outerWidth()) / 10000 * imgWidth;
 	mapEl[recalcIndex][1][1] = (unit == 'px') ? parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight() : (parseInt($('.grid-box._active').css('top')) + $('.grid-box._active').outerHeight()) / 10000* imgWidth;
-	console.log(mapEl[recalcIndex][0][0])
 }
