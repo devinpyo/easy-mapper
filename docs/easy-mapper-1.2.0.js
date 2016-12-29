@@ -133,7 +133,7 @@ function generateCode() {
 		var target = (mapEl[i][3]) ? mapEl[i][3] : '<em>target</em>';
 		
 		// 마크업 루프 생성
-		gcAloop += '&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="' + link + '" style="position:absolute; top:' + top + unit + '; left:' + left + unit + '; width:' + width + unit + '; height:' + height + unit + '; display:block; background:url(about:blank);"&gt;' + '<br>';
+		gcAloop += '&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="' + link + '" style="position:absolute; top:' + top + unit + '; left:' + left + unit + '; width:' + width + unit + '; height:' + height + unit + '; display:block; background:url(about:blank);"&gt;&lt;a&gt;' + '<br>';
 		gcMloop += '&nbsp;&nbsp;&nbsp;&nbsp;&lt;area shape="rect" coords="' + startCoordX + ', ' + startCoordY + ', ' + endCoordX + ', ' + endCoordY + '" href="' + link + '" target="' + target + '"&gt;' + '<br>';
 	}
 	
